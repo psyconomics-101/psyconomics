@@ -1,0 +1,169 @@
+<title>Psyconomics Behaviour Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F5F7;--card:#fff;--ink:#14202B;--mu:#5B6B7A;--ln:#D9E0E6;--a:#0E8F7E;--b:#D8591F;--c:#6B57D6;--d:#B8860B;--e:#C2366F;--f:#2F7FBF;--g:#4B8B3B;--h:#8A5A2B;--bad:#B3261E;--good:#0B7A5E;--bb:#FBE9E7;--gb:#E2F4EE;--bt:#14202B;--bx:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1720;--card:#17212C;--ink:#E8EEF3;--mu:#93A3B3;--ln:#263544;--a:#3CC7B0;--b:#F28A55;--c:#9C8BFF;--d:#E6C04A;--e:#F274A7;--f:#7FB8E8;--g:#8FCB6E;--h:#D69A63;--bad:#FF8A80;--good:#5FD3AE;--bb:#3A1F1D;--gb:#173229;--bt:#E8EEF3;--bx:#0F1720;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1720;--card:#17212C;--ink:#E8EEF3;--mu:#93A3B3;--ln:#263544;--a:#3CC7B0;--b:#F28A55;--c:#9C8BFF;--d:#E6C04A;--e:#F274A7;--f:#7FB8E8;--g:#8FCB6E;--h:#D69A63;--bad:#FF8A80;--good:#5FD3AE;--bb:#3A1F1D;--gb:#173229;--bt:#E8EEF3;--bx:#0F1720;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Onest,system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.w{max-width:960px;margin:0 auto;padding:18px 16px 48px}h1{font-size:1.5rem;margin:0 0 4px}h2{font-size:1.1rem;margin:0 0 8px}p{margin:0 0 8px}
+.mu{color:var(--mu);font-size:.88rem}.cd{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-top:12px}
+.st{display:flex;flex-wrap:wrap;gap:6px 26px}.st span{display:block;font-size:.78rem;color:var(--mu)}.st b{font-size:1.2rem}
+svg{width:100%;height:auto;display:block}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.sk{border:1px solid var(--ln);border-top-width:4px;border-radius:8px;padding:10px;background:var(--card);font-size:.9rem;min-width:0}
+.r{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+button,select,input{font:inherit}button,select{min-height:38px;padding:0 12px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--ink);cursor:pointer}
+button.p{background:var(--bt);color:var(--bx);border-color:var(--bt);font-weight:500}button:disabled{opacity:.4}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.up{color:var(--good)}.dn{color:var(--bad)}.pl{display:inline-block;padding:1px 10px;border-radius:99px;font-size:.78rem;font-weight:500}
+.hit{background:var(--bb);color:var(--bad)}.ok{background:var(--gb);color:var(--good)}
+.nw{display:block;width:100%;text-align:left;margin-top:6px;min-height:0;padding:6px 10px;font-size:.88rem}
+.dt{border:1px solid var(--ln);border-radius:8px;padding:10px;margin-top:8px}.bar{height:6px;background:var(--ln);border-radius:3px;margin:4px 0}.bar i{display:block;height:6px;border-radius:3px}
+#sd{padding:8px 14px;border-radius:8px;background:var(--bt);color:var(--bx);text-decoration:none;font-weight:500}#rep,#play{display:none}.m{border:2px solid var(--ink)}#msg{min-height:22px;color:var(--bad);font-size:.88rem}
+.tx{min-height:38px;padding:0 10px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--ink)}
+</style>
+<div class="w">
+<h1>Psyconomics: trader behaviour lab</h1>
+<p class="mu">A simulated market of 8 real Indian companies and one gold fund, with news, rumours, crowd sentiment, spreads, fees, and four crisis events. The crises are different every game. Trade for 90 days. Every decision is logged, checked for 10 patterns, and checked against how you handled each crisis.</p>
+<div id="start" class="cd"><h2>Before you start</h2><p class="mu">Training tool. This is a school research project by Manya Sharma. Results describe trading patterns, not you as a person. Enter the code the researcher gave you (for example P01). Do not enter your real name. Results from a simulation show tendencies and are not a diagnosis.</p><div class="r"><input class="tx" id="trn" placeholder="Your code, e.g. P01" aria-label="Participant code"></div>
+<p class="mu" style="margin-top:12px">Real company names are used only to make the game feel familiar. All prices and events are simulated, and prices start at 100. Each stock reacts to news the way its sector tends to (banks to interest rates, airlines to oil, and so on). Stock profiles last updated <span id="snap"></span>. This is not investment advice.</p>
+<div class="r"><input class="tx" id="scn" placeholder="Scenario code (optional)" aria-label="Scenario code"></div><p class="mu">Leave this blank for a fresh random market. Enter the same code as another player to trade the exact same market and compare results.</p>
+<label style="display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:.95rem"><input type="checkbox" id="cs" style="margin-top:3px;width:18px;height:18px"> <span>I understand my decisions are logged and my summary may be sent to the researcher.</span></label>
+<p style="margin-top:10px">You begin with $5,000 cash and 10 shares each of TCS, Reliance and Hindustan Unilever. A $3,000 bonus arrives on day 31. Along the way, expect four crisis events, such as a market crash, a rate shock, an oil spike or a scandal at one company. Which ones you get, and when, is random. How likely are you to beat the market average (equal mix of all 8 holdings)?</p>
+<div class="r"><input type="range" id="pred" min="0" max="100" value="50" aria-label="Confidence"><b id="pv">50%</b></div>
+<div class="r"><button class="p" id="go">Start trading</button></div><div id="gm" class="dn mu"></div></div>
+<div id="play">
+<div class="cd"><div class="st"><div><span>Day</span><b id="sD"></b></div><div><span>Cash</span><b id="sC"></b></div><div><span>Portfolio</span><b id="sV"></b></div></div>
+<svg id="ch" viewBox="0 0 600 220" role="img" aria-label="Price chart of eight holdings, rebased to 100"></svg><div id="lg" class="mu"></div>
+<div class="r"><button class="p" id="nx">Next day</button><button id="au">Auto-play</button><button id="sk">Skip to end</button></div></div>
+<div class="cd"><b>Order ticket</b><div class="r"><select id="qty" aria-label="Shares"><option>5</option><option selected>10</option><option>25</option></select>
+<select id="why" aria-label="Reason"><option value="">Why this trade?</option><option value="conv">I researched it</option><option value="news">The news</option><option value="crowd">Everyone else is doing it</option><option value="rose">Price went up</option><option value="fell">Price went down</option><option value="anchor">Get back to what I paid</option><option value="bored">Felt like acting</option></select><select id="stp" aria-label="Stop-loss"><option value="">No stop-loss</option><option value=".05">Stop-loss 5%</option><option value=".10">Stop-loss 10%</option><option value=".15">Stop-loss 15%</option></select><select id="tpt" aria-label="Take-profit"><option value="">No take-profit</option><option value=".10">Take-profit 10%</option><option value=".20">Take-profit 20%</option><option value=".30">Take-profit 30%</option></select></div><div id="msg" aria-live="polite"></div></div>
+<div class="g" id="sg"></div>
+<div class="cd"><b>News feed</b> <span class="mu">tap a headline to read the source</span><div id="nf"></div></div><div class="cd"><b>Trade blotter</b><div style="overflow-x:auto"><table id="bl" style="width:100%;border-collapse:collapse;font-size:.85rem"></table></div></div></div>
+<div id="rep">
+<div class="cd m"><h2>Weekly behaviour report: <span id="rn"></span></h2><p class="mu">Simulated data. Costs are estimates versus a disciplined baseline, and categories can overlap.</p>
+<div class="st"><div><span>Final value</span><b id="r1"></b></div><div><span>You vs market</span><b id="r2"></b></div><div><span>Estimated cost of biases</span><b id="r3"></b></div><div><span>Trades</span><b id="r4"></b></div><div><span>Max drawdown</span><b id="r5"></b></div><div><span>Daily volatility</span><b id="r6"></b></div><div><span>Turnover</span><b id="r7"></b></div><div><span>Win rate on sells</span><b id="r8"></b></div></div><div id="cv" class="mu" style="margin-top:8px"></div><div id="top"></div></div>
+<div class="cd"><h2>Crisis response</h2><p class="mu">How you handled each event in your market.</p><div id="crw"></div></div><div class="cd"><h2>All 10 detectors</h2><div id="ds"></div></div>
+<div class="cd"><h2>Send your results</h2><p class="mu">This sends only the summary numbers, your code and the scenario code, no personal details.</p><textarea id="pl" readonly rows="4" style="width:100%;font:inherit;font-size:.8rem;padding:8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--ink)"></textarea><div class="r"><a id="sd" target="_blank" rel="noopener" style="display:none">Send to researcher</a></div></div><div class="r"><button class="p" id="ag">Play again</button><button id="cp">Copy report</button></div></div>
+</div>
+<script>
+var FORM="",ENT="",SNAP="Nov 2026";
+var D=90,SP=.0015,FEE=2,BN=30,fv0=11000,HY=4;
+/* b = how much it follows the whole market, k = how jumpy it is on its own */
+var S=[
+{t:"TCS",n:"Tata Consultancy Services",sec:"IT",b:.8,k:.8,c:"--a"},
+{t:"RELIANCE",n:"Reliance Industries",sec:"ENERGY",b:1,k:.9,c:"--b"},
+{t:"HUL",n:"Hindustan Unilever",sec:"FMCG",b:.5,k:.6,c:"--c"},
+{t:"HDFCBANK",n:"HDFC Bank",sec:"BANK",b:1,k:.8,c:"--d"},
+{t:"ETERNAL",n:"Eternal (Zomato)",sec:"GROWTH",b:1.5,k:2.2,c:"--e"},
+{t:"GOLDBEES",n:"Nippon Gold BeES fund",sec:"GOLD",b:.1,k:.4,c:"--f"},
+{t:"INDIGO",n:"InterGlobe Aviation",sec:"AIR",b:1.1,k:1.5,c:"--g"},
+{t:"DLF",n:"DLF (real estate)",sec:"REALTY",b:1.1,k:1.1,c:"--h"}];
+var INIT=S.map(function(_,i){return i<3?10:0});
+/* Crisis pool. mg = daily shock, n = days it lasts, w = how strongly each sector feels it (multiplies mg; "_" is the default). */
+var CT=[
+{id:"crash",nm:"Global market crash",ds:"A broad sell-off drags almost every stock down together.",mg:[-.035,-.055],n:[3,5],w:{_:1,GOLD:-.3,GROWTH:1.3,AIR:1.2}},
+{id:"rate",nm:"Interest rate shock",ds:"A surprise rate hike hits banks and property hardest.",mg:[-.05,-.075],n:[3,4],w:{_:.2,BANK:1,REALTY:1,GOLD:0}},
+{id:"oil",nm:"Oil price spike",ds:"Crude jumps. Airlines and consumer companies pay more, while oil producers gain.",mg:[-.04,-.06],n:[3,5],w:{_:.3,AIR:1.3,FMCG:.5,ENERGY:-.6,GOLD:-.3}},
+{id:"rupee",nm:"Rupee slide",ds:"The rupee weakens sharply. Exporters gain, airlines and importers suffer.",mg:[-.03,-.05],n:[3,5],w:{_:.3,AIR:1.2,ENERGY:.5,IT:-.7,GOLD:-.5}},
+{id:"growth",nm:"Growth stock sell-off",ds:"Investors dump high-growth stocks and tech.",mg:[-.035,-.055],n:[3,5],w:{_:.1,GROWTH:1.4,IT:.9,GOLD:-.3}},
+{id:"safety",nm:"Flight to safety",ds:"Investors rush into gold and out of risky stocks.",mg:[.03,.04],n:[3,4],w:{_:-.2,GOLD:1,GROWTH:-.8,IT:-.6,AIR:-.6}},
+{id:"rally",nm:"Surprise stimulus rally",ds:"A government support package lifts the whole market.",mg:[.025,.04],n:[3,4],w:{_:1,GOLD:0,FMCG:.5}},
+{id:"shock",nm:"Company shock"}];
+var SH={IT:"A major overseas client cancels a big contract",ENERGY:"An outage shuts a major refinery",FMCG:"A product-quality scare hits its biggest brand",BANK:"The regulator stops it from signing new customers",GROWTH:"Regulators open an action against the platform",AIR:"A regulator grounds part of the fleet over a safety scare",REALTY:"Key project approvals are put on hold"};
+var P,F,CR,EV,day,cash,sh,cost,log,clk,tc,pred,timer,tn,eq,rl,CX,seed,seedLbl;
+function $(x){return document.getElementById(x)}
+function rng(s){return function(){s|=0;s=s+1831565813|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function fm(n){return(n<0?"-":"")+"$"+Math.abs(Math.round(n)).toLocaleString("en-US")}
+function pc(n){return(n>=0?"+":"")+(n*100).toFixed(1)+"%"}
+function toSeed(v){v=(v||"").trim();if(!v)return Math.floor(Math.random()*900000)+100000;if(/^\d+$/.test(v))return+v;var n=7;for(var i=0;i<v.length;i++)n=(n*31+v.charCodeAt(i))>>>0;return n}
+function plan(R){
+ var slots=[[10,22],[28,40],[46,58],[64,78]],pool=CT.slice(),i,j,t;
+ for(i=pool.length-1;i>0;i--){j=Math.floor(R()*(i+1));t=pool[i];pool[i]=pool[j];pool[j]=t}
+ return pool.slice(0,4).map(function(tp,k){
+  var d=slots[k][0]+Math.floor(R()*(slots[k][1]-slots[k][0]+1)),c;
+  if(tp.id==="shock"){
+   var cand=[];S.forEach(function(x,q){if(x.sec!=="GOLD")cand.push(q)});var q=cand[Math.floor(R()*cand.length)];
+   c={id:"shock",nm:"Company shock: "+S[q].n,ds:SH[S[q].sec]+". The stock drops sharply overnight.",d:d,perm:1,i:q,mg:-(.2+R()*.15),aff:[q],n:1,wt:null}}
+  else{
+   var wt=S.map(function(x){return tp.w[x.sec]!==undefined?tp.w[x.sec]:tp.w._}),aff=[];
+   wt.forEach(function(w,q){if(Math.abs(w)>=.5)aff.push(q)});
+   c={id:tp.id,nm:tp.nm,ds:tp.ds,d:d,perm:0,mg:tp.mg[0]+R()*(tp.mg[1]-tp.mg[0]),n:tp.n[0]+Math.floor(R()*(tp.n[1]-tp.n[0]+1)),wt:wt,aff:aff}}
+  return c})}
+function gen(sd){var R=rng(sd),g=function(){return Math.sqrt(-2*Math.log(R()||1e-9))*Math.cos(6.2832*R())};
+CX=plan(R);
+P=S.map(function(){return[100]});F=S.map(function(){return[100]});CR=S.map(function(){return[50]});EV=[];var h=S.map(function(){return 2e-5});
+var hs=15+Math.floor(R()*15),he=hs+18+Math.floor(R()*8);
+for(var d=1;d<D;d++){var m=.0004+.007*g(),ex=S.map(function(){return 0}),hy=S.map(function(){return 0}),csk=S.map(function(){return 0});
+ CX.forEach(function(c){
+  if(c.perm){if(d===c.d){ex[c.i]+=c.mg;F[c.i][d-1]*=(1+c.mg)}}
+  else if(d>=c.d&&d<c.d+c.n){for(var k=0;k<S.length;k++)csk[k]+=c.mg*c.wt[k]}
+  if(d===c.d){var a0=c.aff[0],sg=c.perm?-1:(c.mg*c.wt[a0]<0?-1:1);EV.push({d:d,i:a0,s:sg,x:c.nm+": "+c.ds,src:"Market wire",crisis:1})}});
+ if(R()<.15){var i=Math.floor(R()*S.length),u=R(),n=S[i].n;
+  if(u<.35){ex[i]=.06;F[i][d-1]*=1.05;EV.push({d:d,i:i,s:1,x:n+" beats earnings forecasts",src:"Company filing"})}
+  else if(u<.7){ex[i]=-.07;F[i][d-1]*=.94;EV.push({d:d,i:i,s:-1,x:n+" misses earnings, cuts outlook",src:"Company filing"})}
+  else{ex[i]=.02;hy[i]=30;EV.push({d:d,i:i,s:1,x:"Rumour: takeover bid for "+n,src:"Unverified forum post"})}}
+ for(var i=0;i<S.length;i++){var p=P[i][d-1],f=F[i][d-1],r=S[i].b*m+Math.sqrt(h[i])*S[i].k*g()+.02*Math.log(f/p)+ex[i]+csk[i];
+  if(i==HY){if(d>=hs&&d<=he){r+=.008;hy[i]+=25}else if(d>he&&d<=he+7)r-=.02}
+  r=Math.max(-.18,Math.min(.18,r));h[i]=Math.min(.01,1e-6+.1*r*r+.85*h[i]);P[i].push(Math.max(5,p*(1+r)));F[i].push(f*(1+.0003+.0015*Math.max(-3,Math.min(3,g()))));
+  var q=P[i][d]/P[i][Math.max(0,d-5)]-1;CR[i].push(Math.max(5,Math.min(95,50+500*q+hy[i]+8*g())))}}}
+function rt(i,d){var g=F[i][d]/P[i][d]-1;return g>.08?"Buy":g<-.08?"Sell":"Hold"}
+function val(){var v=cash;for(var i=0;i<S.length;i++)v+=sh[i]*P[i][day];return v}
+function heldBefore(i,d){var v=INIT[i];log.forEach(function(l){if(l.i===i&&l.d<d)v+=(l.ty==="buy"?l.q:-l.q)});return v}
+function newGame(raw){raw=(raw||"").trim();seed=toSeed(raw);seedLbl=raw||String(seed);gen(seed);day=0;cash=5000;sh=INIT.slice();cost=S.map(function(){return 100});log=[];clk=[];tc=S.map(function(){return 0});rl=S.map(function(){return null});eq=[8000]}
+function init(){newGame("");clearInterval(timer);timer=null;$("au").textContent="Auto-play";$("rep").style.display="none";$("play").style.display="none";$("start").style.display="block";$("snap").textContent=SNAP}
+$("pred").oninput=function(){$("pv").textContent=this.value+"%"};
+$("go").onclick=function(){if(!$("trn").value.trim()){$("gm").textContent="Enter your code first.";return}if(!$("cs").checked){$("gm").textContent="Tick the checkbox above (\"I understand...\") before starting.";return}tn=$("trn").value.trim();pred=+$("pred").value;newGame($("scn").value);$("gm").textContent="";$("start").style.display="none";$("play").style.display="block";draw()};
+function tr(i,ty,all){var w=$("why").value;if(!w){$("msg").textContent="Pick a reason before you trade.";return}$("msg").textContent="";
+ var q=all?sh[i]:+$("qty").value,mid=P[i][day];
+ if(ty=="buy"){var px=mid*(1+SP);if(cash<px*q+FEE){$("msg").textContent="Not enough cash.";return}var pn=sh[i]?px/cost[i]-1:0;cash-=px*q+FEE;cost[i]=(cost[i]*sh[i]+px*q)/(sh[i]+q);sh[i]+=q;if($("stp").value||$("tpt").value)rl[i]={s:+$("stp").value||0,t:+$("tpt").value||0};log.push({d:day,i:i,ty:ty,q:q,px:px,pnl:pn,rs:w,cr:CR[i][day],rt:rt(i,day),mv:mid/P[i][Math.max(0,day-5)]-1})}
+ else{q=Math.min(q,sh[i]);if(q<1)return;var px=mid*(1-SP);log.push({d:day,i:i,ty:ty,q:q,px:px,pnl:px/cost[i]-1,rs:w,cr:CR[i][day],mv:mid/P[i][Math.max(0,day-5)]-1});cash+=px*q-FEE;sh[i]-=q;if(!sh[i])rl[i]=null}
+ tc[i]++;draw()}
+function nx(){if(day<D-1){day++;if(day==BN){cash+=3000;$("msg").textContent="A $3,000 bonus arrived."}auto();eq.push(val());draw()}if(day>=D-1)fin()}
+$("nx").onclick=nx;$("sk").onclick=function(){while(day<D-1){day++;if(day==BN)cash+=3000;auto();eq.push(val())}draw();fin()};$("cp").onclick=function(){try{navigator.clipboard.writeText($("rep").innerText).then(function(){$("cp").textContent="Copied"},function(){$("cp").textContent="Copy blocked: select the text manually"})}catch(e){$("cp").textContent="Copy blocked: select the text manually"}};
+$("au").onclick=function(){if(timer){clearInterval(timer);timer=null;this.textContent="Auto-play"}else{this.textContent="Pause";timer=setInterval(nx,400)}};
+$("ag").onclick=init;
+$("sg").onclick=function(e){var b=e.target.closest("button");if(b)tr(+b.dataset.i,b.dataset.t,b.dataset.a)};
+$("nf").onclick=function(e){var b=e.target.closest("button");if(!b)return;var v=EV[+b.dataset.k];if(!v.rd){v.rd=1;clk.push({al:sh[v.i]>0&&v.s>0})}b.innerHTML=v.x+' <span class="mu">Source: '+v.src+'</span>'};
+function auto(){for(var i=0;i<S.length;i++){var q0=rl[i];if(!q0||!sh[i])continue;var p=P[i][day],c=cost[i];if((q0.s&&p<=c*(1-q0.s))||(q0.t&&p>=c*(1+q0.t))){var q=sh[i],px=p*(1-SP);log.push({d:day,i:i,ty:"sell",q:q,px:px,pnl:px/c-1,rs:"rule",cr:CR[i][day],mv:p/P[i][Math.max(0,day-5)]-1});cash+=px*q-FEE;sh[i]=0;rl[i]=null;tc[i]++;$("msg").textContent="Rule triggered: sold all "+S[i].t+"."}}}
+function draw(){$("sD").textContent=(day+1)+" / "+D;$("sC").textContent=fm(cash);$("sV").textContent=fm(val());
+ var lo=999,hi=0;P.forEach(function(p){for(var t=0;t<=day;t++){lo=Math.min(lo,p[t]);hi=Math.max(hi,p[t])}});lo=Math.floor(lo-3);hi=Math.ceil(hi+3);var y=function(v){return 200-(v-lo)/(hi-lo)*185},s='<line x1="30" y1="200" x2="590" y2="200" stroke="var(--ln)"/><line x1="30" y1="'+y(100)+'" x2="590" y2="'+y(100)+'" stroke="var(--ln)" stroke-dasharray="3 4"/><text x="2" y="'+(y(100)+4)+'" font-size="11" fill="var(--mu)">100</text>';
+ for(var i=0;i<S.length;i++){var d="";for(var t=0;t<=day;t++)d+=(t?"L":"M")+(30+t*560/(D-1)).toFixed(1)+" "+y(P[i][t]).toFixed(1);s+='<path d="'+d+'" fill="none" stroke="var('+S[i].c+')" stroke-width="1.8"/>'}
+ log.forEach(function(l){s+='<circle cx="'+(30+l.d*560/(D-1))+'" cy="'+y(P[l.i][l.d])+'" r="4.5" fill="'+(l.ty=="buy"?"var(--card)":"var("+S[l.i].c+")")+'" stroke="var('+S[l.i].c+')" stroke-width="2"/>'});
+ $("ch").innerHTML=s+'<text x="30" y="216" font-size="11" fill="var(--mu)">Filled dot = sell, hollow dot = buy. Prices start at 100.</text>';
+ $("lg").innerHTML=S.map(function(x){return'<span style="color:var('+x.c+')">&#9632;</span> '+x.t}).join(" &nbsp; ");
+ $("sg").innerHTML=S.map(function(x,i){var p=P[i][day],c=CR[i][day],pl=sh[i]?p/cost[i]-1:0;return'<div class="sk" style="border-top-color:var('+x.c+')"><b>'+x.t+'</b> <span class="mu">'+x.n+'</span><div style="font-size:1.2rem;font-weight:700">$'+p.toFixed(2)+' <span class="'+(p>=P[i][Math.max(0,day-1)]?"up":"dn")+'" style="font-size:.8rem">'+pc(p/P[i][Math.max(0,day-1)]-1)+'</span></div><div class="mu">Crowd: '+Math.round(c)+'% buying</div><div class="bar"><i style="width:'+c+'%;background:var('+x.c+')"></i></div><div class="mu">Analysts: '+rt(i,day)+'</div><div class="mu">Own '+sh[i]+(rl[i]?' &middot; stop '+(Math.round(rl[i].s*100)||'-')+'% / target '+(Math.round(rl[i].t*100)||'-')+'%':'')+(sh[i]?' <span class="'+(pl>=0?"up":"dn")+'">'+pc(pl)+'</span>':'')+'</div><div class="r"><button data-i="'+i+'" data-t="buy">Buy</button><button data-i="'+i+'" data-t="sell"'+(sh[i]?"":" disabled")+'>Sell</button><button data-i="'+i+'" data-t="sell" data-a="1"'+(sh[i]?"":" disabled")+'>All</button></div></div>'}).join("");
+ var h="";EV.forEach(function(v,k){if(v.d<=day)h='<button class="nw" data-k="'+k+'">'+v.x+(v.rd?' <span class="mu">Source: '+v.src+'</span>':'')+'</button>'+h});$("nf").innerHTML=h||'<p class="mu">No news yet.</p>';$("bl").innerHTML='<tr class="mu"><td>Day</td><td>Side</td><td>Stock</td><td>Qty</td><td>Price</td><td>Reason</td></tr>'+log.slice(-8).reverse().map(function(l){return'<tr style="border-top:1px solid var(--ln)"><td>'+(l.d+1)+'</td><td>'+l.ty+'</td><td>'+S[l.i].t+'</td><td>'+l.q+'</td><td>$'+l.px.toFixed(2)+'</td><td>'+l.rs+'</td></tr>'}).join("")}
+function fin(){clearInterval(timer);timer=null;var fn=P.map(function(p){return p[D-1]}),sm=function(a,f){return a.reduce(function(t,x){return t+f(x)},0)},ps=function(x){return Math.max(0,x)};
+ var se=log.filter(function(l){return l.ty=="sell"}),bu=log.filter(function(l){return l.ty=="buy"});se.forEach(function(s){s.lt=(fn[s.i]-s.px)*s.q});bu.forEach(function(b){b.lt=(fn[b.i]-b.px)*b.q});
+ var L=se.filter(function(s){return s.pnl<0&&s.rs!="rule"}),W=se.filter(function(s){return s.pnl>=0&&s.rs!="rule"}),fees=sm(log,function(l){return FEE+SP*l.px*l.q}),fv=val(),ret=fv/fv0-1,ix=sm(fn,function(x){return x})/(100*S.length)-1;
+ var dd=function(i){var m=0,pk=0;P[i].forEach(function(v){pk=Math.max(pk,v);m=Math.max(m,1-v/pk)});return m},ak=function(a){return a.length?sm(a,function(b){return S[b.i].k})/a.length:.87};
+ var hb=bu.filter(function(b){return b.cr>=70&&b.rt!="Buy"||b.rs=="crowd"}),sb=bu.filter(function(b){return b.pnl<-.1}),an=log.filter(function(l){return l.rs=="anchor"}),bb=bu.filter(function(b){return b.d>=BN&&b.d<BN+5}),sp=sm(bb,function(b){return b.px*b.q});
+ var rc=log.filter(function(l){return Math.abs(l.mv)>.05&&l.rs!="rule"}),rf=rc.filter(function(l){return(l.ty=="buy")==(l.mv>0)}),al=clk.filter(function(c){return c.al}).length;
+ var win=function(c){return log.filter(function(l){return l.d>=c.d&&l.d<c.d+c.n+3&&c.aff.indexOf(l.i)>=0&&l.rs!=="rule"})};
+ var CR2=CX.map(function(c){var w=win(c),sl=w.filter(function(l){return l.ty==="sell"}),by=w.filter(function(l){return l.ty==="buy"}),heldAny=c.aff.some(function(i){return heldBefore(i,c.d)>0}),vd,dt;
+  if(sl.length){var lost=sm(sl,function(x){return ps(x.lt)});vd=lost>0?"Sold, then it recovered":"Sold during the event";dt="You sold "+sl.length+" position(s) affected by this event."+(lost>0?" It recovered afterwards; estimated cost of selling: "+fm(lost)+".":" It did not recover further, so selling limited the damage.")}
+  else if(by.length){var gain=sm(by,function(x){return x.lt});vd=gain>0?"Bought during it, paid off":"Bought during the event";dt="You bought in during the event."+(gain>0?" That paid off: an estimated gain of "+fm(gain)+" by day 90.":" It has not paid off by day 90.")}
+  else if(heldAny){vd="Held through it";dt="You kept your position without trading during the event."}
+  else{vd="Not exposed";dt="You held none of the affected stocks when this happened."}
+  return{nm:c.nm,ds:c.ds,vd:vd,dt:dt,bad:sl.length&&sm(sl,function(x){return x.lt})>0}});
+ var R=[
+ {n:"Loss aversion",h:L.some(function(s){return s.lt>0}),c:sm(L,function(s){return ps(s.lt)}),t:"You sold "+L.length+" position(s) at a loss; "+L.filter(function(s){return s.lt>0}).length+" went on to recover.",r:"Set a stop-loss and review date before you buy. Ask: would I buy it today at this price?"},
+ {n:"Disposition effect",h:W.some(function(s){return s.lt>0}),c:sm(W,function(s){return ps(s.lt)}),t:"You sold winners early, then they kept rising.",r:"Set a take-profit target and a trailing stop in advance."},
+ {n:"Anchoring",h:an.length>0,c:0,t:"You traded "+an.length+" time(s) to get back to your purchase price, which the market does not care about.",r:"Judge the stock by today's value, not your entry price."},
+ {n:"Overconfidence",h:log.length>=14||(pred>=70&&ret<ix),c:fees,t:"You made "+log.length+" trades and paid "+fm(fees)+" in fees and spreads. You predicted "+pred+"% to beat the market; result: "+pc(ret-ix)+".",r:"Cap trades per week and write a one-line thesis before each one."},
+ {n:"Herd behaviour",h:hb.length>=2,c:sm(hb,function(b){return ps(-b.lt)}),t:hb.length+" buy(s) followed a crowd above 70% or the 'everyone is doing it' reason, against analyst advice.",r:"Hide the crowd meter and decide from fundamentals first."},
+ {n:"Confirmation bias",h:clk.length>=3&&al/clk.length>=.75,c:0,t:al+" of "+clk.length+" headlines you opened supported a position you already held.",r:"Before each trade, write the strongest argument against it."},
+ {n:"Mental accounting",h:sp>=2100&&ak(bb)>ak(bu.filter(function(b){return b.d<BN})),c:0,t:"You spent "+fm(sp)+" of the bonus within 5 days, on riskier stocks than your usual buys.",r:"Treat bonus money exactly like salary. Money has no label."},
+ {n:"Recency bias",h:rc.length>=4&&rf.length/rc.length>=.65,c:0,t:rf.length+" of "+rc.length+" trades chased the last 5 days' move.",r:"Rebalance to fixed weights on a schedule, ignoring recent returns."},
+ {n:"Status quo bias",h:[0,1,2].some(function(i){return tc[i]==0&&dd(i)>.25}),c:0,t:"You left a default holding untouched through a drop of over 25%.",r:"Review every holding on a fixed date and ask: would I choose this today?"},
+ {n:"Sunk cost",h:sb.length>0,c:sm(sb,function(b){return ps(-b.lt)}),t:"You added to a losing position "+sb.length+" time(s).",r:"Ignore what you have already lost. Only future value counts."}];
+ var tot=sm(R,function(x){return x.h?x.c:0}),tp=R.filter(function(x){return x.h}).sort(function(a,b){return b.c-a.c}).slice(0,3);
+ $("r1").textContent=fm(fv);$("r2").textContent=pc(ret-ix);$("r3").textContent=fm(tot);$("r4").textContent=log.length;$("rn").textContent=tn;var pk=0,mdd=0,rs=[];eq.forEach(function(v,k){pk=Math.max(pk,v);mdd=Math.max(mdd,1-v/pk);if(k)rs.push((k==BN?v-3000:v)/eq[k-1]-1)});var mu=sm(rs,function(x){return x})/rs.length,vo=Math.sqrt(sm(rs,function(x){return(x-mu)*(x-mu)})/rs.length);$("r5").textContent=(mdd*100).toFixed(1)+"%";$("r6").textContent=(vo*100).toFixed(2)+"%";$("r7").textContent=(sm(log,function(l){return l.px*l.q})/fv0).toFixed(2)+"x";$("r8").textContent=se.length?Math.round(se.filter(function(s){return s.pnl>0}).length/se.length*100)+"%":"n/a";$("cv").textContent=(log.length<10?"Low sample: fewer than 10 decisions, so treat results as tentative. ":"Based on "+log.length+" logged decisions. ")+"Rule-based exits used: "+log.filter(function(l){return l.rs=="rule"}).length+". Scenario code: "+seedLbl+" (enter it at the start to play this exact market again). Patterns are tendencies in a simulation, not conclusions about the person.";
+ var cd=function(x){return'<div class="dt"><b>'+x.n+'</b> <span class="pl '+(x.h?"hit":"ok")+'">'+(x.h?"Pattern found":"Not found")+'</span>'+(x.h?'<p>'+x.t+(x.c>0?' Estimated cost: <b>'+fm(x.c)+'</b>.':'')+'</p><p class="mu"><b>Rule:</b> '+x.r+'</p>':'')+'</div>'};
+ $("top").innerHTML='<h2 style="margin-top:12px">Top patterns this week</h2>'+(tp.length?tp.map(cd).join(""):'<p>No clear patterns. Disciplined trading.</p>');$("ds").innerHTML=R.map(cd).join("");
+ $("crw").innerHTML=CR2.map(function(x){return'<div class="dt"><b>'+x.nm+'</b> <span class="pl '+(x.bad?"hit":"ok")+'">'+x.vd+'</span><p class="mu">'+x.ds+'</p><p>'+x.dt+'</p></div>'}).join('');
+ var pay=JSON.stringify({id:tn,date:new Date().toISOString().slice(0,10),scn:seedLbl,crises:CX.map(function(c){return c.id}),pred:pred,ret:+(ret*100).toFixed(1),vsMkt:+((ret-ix)*100).toFixed(1),dd:+(mdd*100).toFixed(1),trades:log.length,fees:Math.round(fees),cost:Math.round(tot),hits:R.filter(function(x){return x.h}).map(function(x){return x.n})});$("pl").value=pay;if(FORM&&ENT){var a=$("sd");a.href=FORM+"?usp=pp_url&entry."+ENT+"="+encodeURIComponent(pay);a.style.display="inline-block"}
+ $("play").style.display="none";$("rep").style.display="block";window.scrollTo(0,0)}
+init();
+</script>
